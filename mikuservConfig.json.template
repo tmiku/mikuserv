@@ -1,0 +1,12 @@
+{
+    "serviceAddress": "",
+    "servicePort": "",
+    
+    "pingMessage": "",
+
+    "stravaClientSecret": "",
+
+    "sendgridApiKey": "",
+    "contactFormFromEmail": "",
+    "contactFormToEmail": ""
+}
