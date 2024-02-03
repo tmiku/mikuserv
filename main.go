@@ -55,8 +55,7 @@ func contact(c *gin.Context) {
 		c.String(http.StatusForbidden, "Error in form")
 		return
 	}
-
-	fmt.Printf("%T", form.Password)
+	fmt.Println("JSON received: " + string(jsonBytes))
 
 	var body bytes.Buffer
 	body.WriteString(`{
@@ -86,7 +85,6 @@ func contact(c *gin.Context) {
 	} else {
 		c.String(http.StatusAccepted, "")
 	}
-	fmt.Println(resp)
 }
 
 func stravaToken(c *gin.Context) {
