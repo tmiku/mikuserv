@@ -1,4 +1,4 @@
-FROM golang:1.21-alpine3.18
+FROM golang:1.24-alpine3.19
 
 ADD . /go/src/mikuserv
 
