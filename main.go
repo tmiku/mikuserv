@@ -1,14 +1,15 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/resend/resend-go/v2"
 )
 
 // read in config as global variable
@@ -26,7 +27,7 @@ func main() {
 type CommentForm struct {
 	Email    string
 	Text     string
-	Time     string
+	Date     string
 	Password string
 }
 
@@ -58,35 +59,29 @@ func contact(c *gin.Context) {
 
 	fmt.Printf("%T", form.Password)
 
-	var body bytes.Buffer
-	body.WriteString(`{
-		"from": {"email":"` + mc["contactFormFromEmail"] + `"},
-		"personalizations":[
-			{
-			"to":[{"email":"` + mc["contactFormToEmail"] + `"}],
-			"dynamic_template_data":{"email":"` + form.Email + `","time":"` + form.Time + `","message":"` + form.Text + `"}
-			}
-		],
-		"template_id":"d-62476eb8af63450a8498b9a439d9016d"}`)
+	client := resend.NewClient(mc["resendApiKey"])
 
-	req, err := http.NewRequest(http.MethodPost, "https://api.sendgrid.com/v3/mail/send", &body)
+	// Send
+	params := &resend.SendEmailRequest{
+		From:    "tmiku.net Notifications <" + mc["contactFormFromEmail"] + ">",
+		To:      []string{mc["contactFormToEmail"]},
+		Subject: "Contact form submitted (<" + form.Email + ">)",
+		Html: `
+		A reader has submitted a contact form. Their address is <` + form.Email + `> and they submitted the form at ` + form.Date + `. Message below.<br/>
+		<br/>
+		------------------------------------<br/>
+		` + form.Text + `<br/>
+		------------------------------------<br/>
+		`,
+	}
+
+	sent, err := client.Emails.Send(params)
 	if err != nil {
-		panic(err)
+		c.String(http.StatusInternalServerError, "API rejected email request")
+		return
 	}
-	req.Header.Set("Authorization", "Bearer "+mc["sendgridApiKey"])
-	req.Header.Set("Content-Type", "application/json")
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		panic(err)
-	}
-
-	if resp.StatusCode != http.StatusAccepted {
-		c.String(http.StatusInternalServerError, "Unexpected response from Sendgrid: Code %d, Body %s", resp.StatusCode, resp.Body)
-	} else {
-		c.String(http.StatusAccepted, "")
-	}
-	fmt.Println(resp)
+	fmt.Println("Email sent successfully:", sent.Id, "at", time.Now().Format(time.RFC3339))
+	c.String(http.StatusAccepted, "")
 }
 
 func stravaToken(c *gin.Context) {

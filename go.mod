@@ -1,8 +1,13 @@
 module mikuserv
 
-go 1.20
+go 1.23
 
-require github.com/gin-gonic/gin v1.9.1
+toolchain go1.23.4
+
+require (
+	github.com/gin-gonic/gin v1.9.1
+	github.com/resend/resend-go/v2 v2.23.0
+)
 
 require (
 	github.com/bytedance/sonic v1.9.1 // indirect
