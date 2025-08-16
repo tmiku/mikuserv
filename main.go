@@ -47,7 +47,8 @@ func contact(c *gin.Context) {
 	jsonBytes, err := io.ReadAll(c.Request.Body)
 
 	if err != nil {
-		panic(err)
+		c.String(http.StatusInternalServerError, "Bad JSON from form request")
+		return
 	}
 	var form CommentForm
 	json.Unmarshal(jsonBytes, &form)
@@ -79,24 +80,9 @@ func contact(c *gin.Context) {
 		c.String(http.StatusInternalServerError, "API rejected email request")
 		return
 	}
-<<<<<<< HEAD
+
 	fmt.Println("Email sent successfully:", sent.Id, "at", time.Now().Format(time.RFC3339))
 	c.String(http.StatusAccepted, "")
-=======
-	req.Header.Set("Authorization", "Bearer "+mc["sendgridApiKey"])
-	req.Header.Set("Content-Type", "application/json")
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		panic(err)
-	}
-
-	if resp.StatusCode != http.StatusAccepted {
-		c.String(http.StatusInternalServerError, "Unexpected response from Sendgrid: Code %d, Body %s", resp.StatusCode, resp.Body)
-	} else {
-		c.String(http.StatusAccepted, "")
-	}
->>>>>>> public/main
 }
 
 func stravaToken(c *gin.Context) {
