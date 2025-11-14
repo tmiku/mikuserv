@@ -83,6 +83,7 @@ func contact(c *gin.Context) {
 
 	fmt.Println("Email sent successfully:", sent.Id, "at", time.Now().Format(time.RFC3339))
 	c.String(http.StatusAccepted, "")
+	fmt.Println("Resend request sent, ID: " + sent.Id)
 }
 
 func stravaToken(c *gin.Context) {
