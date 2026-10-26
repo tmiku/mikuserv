@@ -67,7 +67,7 @@ func contact(c *gin.Context) {
 		To:      []string{mc["contactFormToEmail"]},
 		Subject: "Contact form submitted (<" + form.Email + ">)",
 		Html: `
-		A reader has submitted a contact form. Their address is <` + form.Email + `> and they submitted the form at ` + form.Date + `. Message below.<br/>
+		A reader has submitted a contact form. Their address is &lt;` + form.Email + `&gt; and they submitted the form at ` + form.Date + `. Message below.<br/>
 		<br/>
 		------------------------------------<br/>
 		` + form.Text + `<br/>
